@@ -10,10 +10,10 @@ static GLuint CreateShader(const std::string txt, GLenum shaderType);
 Shader::Shader(const std::string& filename)
 {
 	_program = glCreateProgram();
-	_shaders[VertexShader] = CreateShader(LoadShader(filename + ".vs"), GL_VERTEX_SHADER);
-	_shaders[FragmentShader] = CreateShader(LoadShader(filename + ".fs"), GL_FRAGMENT_SHADER);
+	_shaders[SHADERS::VertexShader] = CreateShader(LoadShader(filename + ".vs"), GL_VERTEX_SHADER);
+	_shaders[SHADERS::FragmentShader] = CreateShader(LoadShader(filename + ".fs"), GL_FRAGMENT_SHADER);
 
-	for (unsigned int i = 0; i < NUM_SHADERS; i++)
+	for (unsigned int i = 0; i < SHADERS::NUM_SHADERS; i++)
 		glAttachShader(_program, _shaders[i]);
 
 	glBindAttribLocation(_program, 0, "position");
@@ -24,11 +24,13 @@ Shader::Shader(const std::string& filename)
 
 	glValidateProgram(_program);
 	CheckShaderError(_program, GL_VALIDATE_STATUS, true, "Error shader program is invalid: ");
+
+	_uniforms[TRANSFORM_U] = glGetUniformLocation(_program, "transform");
 }
 
 Shader::~Shader()
 {
-	for (unsigned int i = 0; i < NUM_SHADERS; i++)
+	for (unsigned int i = 0; i < SHADERS::NUM_SHADERS; i++)
 	{
 		glDetachShader(_program, _shaders[i]);
 		glDeleteShader(_shaders[i]);
@@ -40,6 +42,12 @@ Shader::~Shader()
 void Shader::bind()
 {
 	glUseProgram(_program);
+}
+
+void Shader::updateUniforms(const Transform& tranform)
+{
+	glm::mat4 model = tranform.getModel();
+	glUniformMatrix4fv(_uniforms[UNIFORMS::TRANSFORM_U], 1, GL_FALSE, &model[0][0]);
 }
 
 void CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string errorMessage)
