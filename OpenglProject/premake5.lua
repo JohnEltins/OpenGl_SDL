@@ -9,6 +9,7 @@ project "OpenglProject"
 
     files{
         "src/**.cpp",
+        "src/**.c",
         "include/**.h",
         "include/**.hpp",
         "vendor/include/**.hpp",

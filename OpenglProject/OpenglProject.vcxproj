@@ -89,6 +89,8 @@
     <ClInclude Include="include\Display.h" />
     <ClInclude Include="include\Mesh.h" />
     <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="include\Texture.h" />
     <ClInclude Include="vendor\include\GL\eglew.h" />
     <ClInclude Include="vendor\include\GL\glew.h" />
     <ClInclude Include="vendor\include\GL\glxew.h" />
@@ -611,6 +613,8 @@
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\stb_image.c" />
+    <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="vendor\include\glm\detail\glm.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

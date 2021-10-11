@@ -17,6 +17,7 @@ Shader::Shader(const std::string& filename)
 		glAttachShader(_program, _shaders[i]);
 
 	glBindAttribLocation(_program, 0, "position");
+	glBindAttribLocation(_program, 1, "texCoord");
 
 	glLinkProgram(_program);
 	CheckShaderError(_program, GL_LINK_STATUS, true, "Error shader program failed to link: ");

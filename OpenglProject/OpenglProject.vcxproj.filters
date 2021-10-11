@@ -48,6 +48,9 @@
     <ClInclude Include="include\Shader.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\stb_image.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="vendor\include\GL\eglew.h">
       <Filter>vendor\include\GL</Filter>
     </ClInclude>
@@ -1596,6 +1599,7 @@
     <ClInclude Include="vendor\include\glm\vector_relational.hpp">
       <Filter>vendor\include\glm</Filter>
     </ClInclude>
+    <ClInclude Include="include\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Display.cpp">
@@ -1610,8 +1614,12 @@
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\stb_image.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="vendor\include\glm\detail\glm.cpp">
       <Filter>vendor\include\glm\detail</Filter>
     </ClCompile>
+    <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
 </Project>
