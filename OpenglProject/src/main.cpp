@@ -1,54 +1,78 @@
 #include <iostream>
-#include <GL/glew.h>
-#include "Display.h"
-#include "Shader.h"
-#include "Mesh.h"
-#include "Texture.h"
-#include "Transform.h"
+#include <ECS/ECS.h>
+
+struct Label : public ECS::Component
+{
+    Label() 
+    {
+        word = "Movivel";
+    }
+
+    std::string word;
+};
+
+struct Potition : public ECS::Component
+{
+    Potition(int a, int b) : A(a), B(b) {}
+
+    int A;
+    int B;
+};
+
+struct Name : public ECS::Component
+{
+    Name(const std::string nome) : nome(nome) {}
+
+    std::string nome;
+};
+
+struct system1 : public ECS::System
+{
+    system1()
+    {
+        addComponentSignature<Name>();
+        addComponentSignature<Label>();
+        addComponentSignature<Potition>();
+    }
+};
+
+struct system2 : public ECS::System
+{
+    system2()
+    {
+        addComponentSignature<Label>();
+        addComponentSignature<Potition>();
+    }
+};
+
+struct system3 : public ECS::System
+{
+    system3()
+    {
+        addComponentSignature<Name>();
+    }
+};
 
 int main(int argc, char** argv)
 {
-    Display display(800, 600, std::string("Hello World"));
+    ECS::EntityManager mgr;
 
-    Shader shader("./res/basicShader");
-    Texture texture("./res/bricks.jpg");
+    mgr.registerSystem<system1>();
+    mgr.registerSystem<system2>();
+    mgr.registerSystem<system3>();
 
-    Vertex vertices[] = {
-        Vertex(glm::vec3(-0.5, -0.5, 0.0), glm::vec2(0.0, 0.0)),
-        Vertex(glm::vec3( 0.0, 0.5, 0.0),  glm::vec2(0.5, 1.0)),
-        Vertex(glm::vec3( 0.5, -0.5, 0.0), glm::vec2(1.0, 0.0))
-    };
+    auto entity = mgr.addNewEntity();
+    mgr.addComponent<Label>(entity);
+    mgr.addComponent<Potition>(entity,1, 8);
+  
 
-    Transform transform;
+    ECS::Entity entity2(mgr.addNewEntity(), &mgr);
+    entity2.addComponent<Label>();
+    entity2.addComponent<Potition>(13, 17);
+    entity2.addComponent<Name>("nominho top");
 
-    Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]));
-
-    float counter = 0.0f;
-
-    while (!display.isClosed())
-    {
-        display.clear(0.0f, 0.15f, 0.3f, 1.0f);
-
-        float cosc = cosf(counter);
-        float senc = sinf(counter);
+    mgr.update();
 
 
-        transform.setScale(glm::vec3(cosc, cosc, cosc));
-
-        transform.getPos().x = cosc/2;
-        transform.getPos().y = cosc/2;
-
-       transform.getRot().z = counter;
-
-        shader.bind();
-        texture.bind(0);
-        shader.updateUniforms(transform);
-
-        mesh.draw();
-
-        display.swapBuffers();
-        counter += 0.04f;
-    }
-    
     return 0;
 }
