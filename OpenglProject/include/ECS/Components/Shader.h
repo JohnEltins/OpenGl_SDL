@@ -2,17 +2,17 @@
 #include <string>
 #include <GL/glew.h>
 #include "Transform.h"
+#include "ECS/Base/Component.h"
 
-class Shader
+class Shader : public ECS::Component
 {
 public:
-	Shader(const std::string& filename);
-	virtual ~Shader();
+	Shader(const std::string& filename)
+	{
+		_filename = filename;
+	}
+	virtual ~Shader() {}
 
-	void bind();
-	void updateUniforms(const Transform& tranform);
-
-private:
 	enum SHADERS
 	{
 		VertexShader, FragmentShader, NUM_SHADERS
@@ -26,9 +26,7 @@ private:
 	};
 
 
-	Shader(const Shader& other) {}
-	void operator=(const Shader& other) {}
-
+	std::string _filename;
 	GLuint _program;
 	GLuint _shaders[SHADERS::NUM_SHADERS];
 	GLuint _uniforms[UNIFORMS::NUM_UNIFORMS];

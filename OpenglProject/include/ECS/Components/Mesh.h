@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <GL/glew.h>
+#include "ECS/Base/Component.h"
 
 class Vertex
 {
@@ -20,18 +21,19 @@ private:
 };
 
 
-class Mesh
+struct Mesh : public ECS::Component
 {
-public:
-	Mesh(Vertex* vertices, unsigned int numVertices);
+	Mesh(Vertex* vertices, unsigned int numVertices)
+	{
+		_vertexArrayObject = 0;
+		for(int i = 0; i < NUM_BUFFERS; i++)
+			_vertexArrayBuffers[i] = GLuint(0);
 
-	void draw();
+		_vertices = vertices;
+		_drawCount = numVertices;
+	}
 
-	virtual ~Mesh();
-
-private:
-	Mesh(const Mesh& other) {}
-	void operator=(const Mesh& other) {}
+	virtual ~Mesh() {}
 
 	enum {
 		POSITION_VB,
@@ -43,5 +45,6 @@ private:
 	GLuint _vertexArrayObject;
 	GLuint _vertexArrayBuffers[NUM_BUFFERS];
 	unsigned int _drawCount;
+	Vertex* _vertices;
 };
 

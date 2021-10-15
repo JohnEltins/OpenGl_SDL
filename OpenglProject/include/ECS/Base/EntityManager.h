@@ -4,6 +4,8 @@
 #include "CompList.h"
 #include "Component.h"
 #include "System.h"
+#include "ECS/Components/Mesh.h"
+#include "ECS/Components/Transform.h"
 
 #include <queue>
 #include <map>
@@ -23,24 +25,54 @@ namespace ECS
 			}
 		}
 
-		~EntityManager()
-		{
-
-		}
+		virtual ~EntityManager() {}
 
 		void update()
 		{
 			for (auto& system : _regiteredSystems)
 			{
-				system.second->update();
+				for (auto& entity : _entitiesSignature)
+				{
+					if (belongToSystem(entity.first, system.second->getSignature()))
+						system.second->update(entity.first);
+				}
 			}
 		}
 
-		void render()
+		void init()
 		{
 			for (auto& system : _regiteredSystems)
 			{
-				system.second->render();
+				for (auto& entity : _entitiesSignature)
+				{
+					if(belongToSystem(entity.first, system.second->getSignature()))
+						system.second->init(entity.first);
+				}
+			}
+		}
+
+		void render(EntityID entity)
+		{
+			for (auto& system : _regiteredSystems)
+			{
+				system.second->render(entity);
+			}
+		}
+
+		void draw()
+		{
+			for (auto& system : _regiteredSystems)
+			{
+				for (auto& entity : _entitiesSignature)
+				{
+					if (hasComponent<Mesh>(entity.first))
+					{
+						if(hasComponent<Transform>(entity.first))
+							system.second->draw(entity.first, getComponent<Transform>(entity.first)._model);
+						else
+							system.second->draw(entity.first, glm::mat4(1.0));
+					}
+				}
 			}
 		}
 
@@ -117,18 +149,18 @@ namespace ECS
 		}
 
 		template <typename T>
-		void registerSystem()
+		void registerSystem(EntityManager* manager)
 		{
 			const SystemTypeID systemType = SystemType<T>();
 			assert(_regiteredSystems.count(systemType) == 0 && "System already registered");
-			auto system = std::make_shared<T>();
+			auto system = std::make_shared<T>(manager);
 
 			for (EntityID entity = 0; entity < _entityCount; entity++)
 			{
 				addEntityToSystem(entity, system.get());
+				// system->init(entity);
 			}
 
-			system->init();
 			_regiteredSystems[systemType] = std::move(system);
 		}
 
@@ -192,7 +224,7 @@ namespace ECS
 			}
 		}
 
-		bool belongToSystem(const EntityID entity, EntitySignature& systemSignature)
+		bool belongToSystem(const EntityID entity, EntitySignature systemSignature)
 		{
 			for (const auto compType : systemSignature)
 			{

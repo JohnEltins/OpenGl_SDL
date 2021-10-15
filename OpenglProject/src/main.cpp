@@ -1,78 +1,44 @@
 #include <iostream>
 #include <ECS/ECS.h>
 
-struct Label : public ECS::Component
-{
-    Label() 
-    {
-        word = "Movivel";
-    }
-
-    std::string word;
-};
-
-struct Potition : public ECS::Component
-{
-    Potition(int a, int b) : A(a), B(b) {}
-
-    int A;
-    int B;
-};
-
-struct Name : public ECS::Component
-{
-    Name(const std::string nome) : nome(nome) {}
-
-    std::string nome;
-};
-
-struct system1 : public ECS::System
-{
-    system1()
-    {
-        addComponentSignature<Name>();
-        addComponentSignature<Label>();
-        addComponentSignature<Potition>();
-    }
-};
-
-struct system2 : public ECS::System
-{
-    system2()
-    {
-        addComponentSignature<Label>();
-        addComponentSignature<Potition>();
-    }
-};
-
-struct system3 : public ECS::System
-{
-    system3()
-    {
-        addComponentSignature<Name>();
-    }
-};
-
 int main(int argc, char** argv)
 {
     ECS::EntityManager mgr;
 
-    mgr.registerSystem<system1>();
-    mgr.registerSystem<system2>();
-    mgr.registerSystem<system3>();
+    ECS::Entity canvas(mgr.addNewEntity(), &mgr);
+    canvas.addComponent<Canvas>(800, 600, std::string("Hello World"));
 
-    auto entity = mgr.addNewEntity();
-    mgr.addComponent<Label>(entity);
-    mgr.addComponent<Potition>(entity,1, 8);
-  
+    Vertex vertices[] = {
+        Vertex(glm::vec3(-0.3, -0.3, 0.0), glm::vec2(0.0, 0.0)),
+        Vertex(glm::vec3(0.0, 0.3, 0.0),  glm::vec2(0.5, 1.0)),
+        Vertex(glm::vec3(0.3, -0.3, 0.0), glm::vec2(1.0, 0.0))
+    };
 
-    ECS::Entity entity2(mgr.addNewEntity(), &mgr);
-    entity2.addComponent<Label>();
-    entity2.addComponent<Potition>(13, 17);
-    entity2.addComponent<Name>("nominho top");
+    Vertex vertices2[] = {
+        Vertex(glm::vec3(0.3, 0.3, 0.0), glm::vec2(0.0, 0.0)),
+        Vertex(glm::vec3(0.0, -0.3, 0.0),  glm::vec2(0.5, 1.0)),
+        Vertex(glm::vec3(-0.3, 0.3, 0.0), glm::vec2(1.0, 0.0))
+    };
 
-    mgr.update();
+    ECS::Entity tri(mgr.addNewEntity(), &mgr);
+    tri.addComponent<Mesh>(vertices, sizeof(vertices) / sizeof(vertices[0]));
+    tri.addComponent<Shader>("./res/basicShader2");
+    tri.addComponent<Texture>("./res/bricks.jpg");
+
+    ECS::Entity tri2(mgr.addNewEntity(), &mgr);
+    tri2.addComponent<Mesh>(vertices2, sizeof(vertices2) / sizeof(vertices2[0]));
+    tri2.addComponent<Shader>("./res/basicShader");
+    tri2.addComponent<Transform>();
 
 
+    mgr.registerSystem<Renderer>(&mgr);
+    mgr.registerSystem<ShaderHandler>(&mgr);
+    mgr.registerSystem<TextureHandler>(&mgr);
+    mgr.registerSystem<TransformHandler>(&mgr);
+    mgr.registerSystem<Draw>(&mgr);
+
+    mgr.init();
+
+    mgr.render(canvas.getID());
     return 0;
 }

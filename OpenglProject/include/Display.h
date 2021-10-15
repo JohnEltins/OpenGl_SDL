@@ -13,7 +13,7 @@ public:
 	void clear(float r, float g, float b, float a);
 
 private:
-	Display(const Display& other ) {}
+	//Display(const Display& other ) {}
 	void operator=(const Display& other) {}
 
 	SDL_Window* _window;
