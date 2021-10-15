@@ -4,7 +4,7 @@
 #include <vector>
 #include <assert.h>
 #include <algorithm>
-
+#include <iostream>
 
 namespace ECS {
 	class ICompList
@@ -26,17 +26,20 @@ namespace ECS {
 
 		void insert(const T& component)
 		{
+			//auto comp = std::find_if(data.begin(), data.end(), [&](const T& c) { return c.getID() == component.getID(); });
 			auto comp = std::find_if(data.begin(), data.end(), [&](const T& c) { return c.getID() == component.getID(); });
-			if (comp != data.end())
+
+			if (comp == data.end())
 			{
-				data.push_back(*comp);
+				data.push_back(component);
 			}
 		}
 
 		T& get(const EntityID entity)
 		{
 			auto comp = std::find_if(data.begin(), data.end(), [&](const T& c) { return c.getID() == entity; });
-			assert( comp != data.end && "Trying to get non exiting data");
+			//assert( comp != data.end() && "Trying to get non exiting data");
+			
 			return *comp;
 		}
 

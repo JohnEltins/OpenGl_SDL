@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Types.h"
+#include "glm/glm.hpp"
 
 namespace ECS {
 	struct System
 	{
-		System() = default;
+		System(EntityManager* manager) { _manager = manager; }
 		virtual ~System() = default;
 
 		void removeEntity(const EntityID entity)
@@ -29,22 +30,16 @@ namespace ECS {
 			_signature.insert(CompType<T>());
 		}
 
-		virtual void init(){}
-		virtual void update()
-		{
-			for (auto i : _entities)
-			{
-				std::cout << i << " ";
-			}
+		virtual void init(const ECS::EntityID entity) {}
+		virtual void update(const ECS::ComponentTypeID entity) {}
 
-			std::cout << std::endl;
-		}
-
-		virtual void render(){}
+		virtual void render(const EntityID entity) {}
+		virtual void draw(const EntityID entity, glm::mat4 model) {}
 		virtual void destroy(){}
 
 	protected:
 		friend class EntityManager;
+		EntityManager* _manager;
 		EntitySignature _signature;
 		std::set<EntityID> _entities;
 	};

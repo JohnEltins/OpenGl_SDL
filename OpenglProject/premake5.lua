@@ -15,8 +15,7 @@ project "OpenglProject"
         "vendor/include/**.hpp",
         "vendor/include/**.h",
         "vendor/include/**.inl",
-        "vendor/include/**.cpp",
-        "vendor/include/**.c"
+        "vendor/include/**.cpp"
     }
 
     includedirs{
